@@ -20,7 +20,27 @@ function persist(){
 }
 function toast(t){const node=document.querySelector('#toast');node.textContent=t;node.classList.add('show');clearTimeout(window.toastTimeout);window.toastTimeout=setTimeout(()=>node.classList.remove('show'),2200)}
 function swatches(p){return `<div class="swatches" role="group" aria-label="Варианты ${esc(p.name)}">${p.variants.map((v,i)=>`<button class="swatch ${i===(selected[p.id]||0)?'active':''}" data-variant="${esc(p.id)}" data-index="${i}" aria-label="${esc(v.color)} — ${esc(v.ref)}" aria-pressed="${i===(selected[p.id]||0)}" title="${esc(v.color)} — ${esc(v.ref)}"><span style="background:${esc(v.hex||'#8390a0')}"></span></button>`).join('')}<span class="variant-color">${esc(variant(p).color)}</span></div>`}
-function card(p){const v=variant(p);return `<article class="product"><div class="product-art real-product"><button class="heart ${fav.includes(p.id)?'selected':''}" data-fav="${esc(p.id)}" aria-label="Избранное: ${esc(p.name)}" aria-pressed="${fav.includes(p.id)}"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button><span class="badge">${esc(p.type)}</span><button data-detail="${esc(p.id)}" aria-label="Подробнее о ${esc(p.name)}" class="image-button"><img src="${esc(v.image)}" alt="${esc(p.brand+' '+p.name+' '+v.ref)}" loading="lazy" width="320" height="320"></button></div><div class="product-info"><small title="${esc(p.brand)}">${esc(p.brand)}</small><h3><a href="#catalog" data-detail="${esc(p.id)}">${esc(p.name)}</a></h3><p class="product-specs">${esc([p.mechanism,p.size].filter(Boolean).join(' · ')||p.type)}</p>${swatches(p)}<p class="product-ref ${v.stock?'has-stock':''}"><span class="product-sku">Арт. ${esc(v.ref)} · </span>${availability(v)}</p><div class="price-row"><strong class="request-price">${priceLabel(v)}</strong><button data-add="${esc(p.id)}" ${v.stock==='out_of_stock'?'disabled':''}>${v.stock==='out_of_stock'?'Нет в наличии':'В корзину +'}</button></div></div></article>`}
+function card(p){const v=variant(p);return `<article class="product" data-product-id="${esc(p.id)}"><div class="product-art real-product"><button class="heart ${fav.includes(p.id)?'selected':''}" data-fav="${esc(p.id)}" aria-label="Избранное: ${esc(p.name)}" aria-pressed="${fav.includes(p.id)}"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button><span class="badge">${esc(p.type)}</span><button data-detail="${esc(p.id)}" aria-label="Подробнее о ${esc(p.name)}" class="image-button"><img src="${esc(v.image)}" alt="${esc(p.brand+' '+p.name+' '+v.ref)}" loading="lazy" width="320" height="320"></button></div><div class="product-info"><small title="${esc(p.brand)}">${esc(p.brand)}</small><h3><a href="#catalog" data-detail="${esc(p.id)}">${esc(p.name)}</a></h3><p class="product-specs">${esc([p.mechanism,p.size].filter(Boolean).join(' · ')||p.type)}</p>${swatches(p)}<p class="product-ref ${v.stock?'has-stock':''}"><span class="product-sku">Арт. ${esc(v.ref)} · </span><span class="product-availability">${availability(v)}</span></p><div class="price-row"><strong class="request-price">${priceLabel(v)}</strong><button data-add="${esc(p.id)}" ${v.stock==='out_of_stock'?'disabled':''}>${v.stock==='out_of_stock'?'Нет в наличии':'В корзину +'}</button></div></div></article>`}
+function updateCardVariant(p){
+  const root=document.querySelector(`[data-product-id="${p.id}"]`);
+  if(!root)return;
+  const v=variant(p),image=root.querySelector('.image-button img');
+  if(image.getAttribute('src')!==v.image)image.src=v.image;
+  image.alt=p.brand+' '+p.name+' '+v.ref;
+  root.querySelectorAll('.swatch').forEach(button=>{
+    const active=Number(button.dataset.index)===(selected[p.id]||0);
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-pressed',String(active));
+  });
+  root.querySelector('.variant-color').textContent=v.color;
+  root.querySelector('.product-ref').classList.toggle('has-stock',!!v.stock);
+  root.querySelector('.product-sku').textContent='Арт. '+v.ref+' · ';
+  root.querySelector('.product-availability').textContent=availability(v);
+  root.querySelector('.request-price').textContent=priceLabel(v);
+  const add=root.querySelector('[data-add]');
+  add.disabled=v.stock==='out_of_stock';
+  add.textContent=add.disabled?'Нет в наличии':'В корзину +';
+}
 function renderPagination(total,start,end){
   const visible=new Set((pageCount<=5?Array.from({length:pageCount},(_,i)=>i+1):[1,pageCount,page-1,page,page+1]).filter(n=>n>0&&n<=pageCount));
   let previous=0;
@@ -77,11 +97,14 @@ if(b.dataset.shopAction==='favorites'){openFavorites();return}
 if(b.dataset.shopAction==='cart'){openCart();return}
 if(b.dataset.navSection==='catalog'){resetCatalog();return}
 if(b.dataset.variant!==undefined){
-  selected[b.dataset.variant]=Number(b.dataset.index);
-  const inDetail=!!b.closest('#productModal');render();
-  if(inDetail)showDetail(b.dataset.variant,false);
-  const scope=document.querySelector(inDetail?'#productDetail':'#products');
-  [...scope.querySelectorAll('[data-variant]')].find(button=>button.dataset.variant===b.dataset.variant&&button.dataset.index===b.dataset.index)?.focus({preventScroll:true});
+  const p=byId(b.dataset.variant),index=Number(b.dataset.index);
+  if(!p||!Number.isInteger(index)||!p.variants[index]||index===(selected[p.id]||0))return;
+  selected[p.id]=index;
+  updateCardVariant(p);
+  if(b.closest('#productModal')){
+    showDetail(p.id,false);
+    [...document.querySelectorAll('#productDetail [data-variant]')].find(button=>button.dataset.index===String(index))?.focus({preventScroll:true});
+  }
   return;
 }
 if(b.dataset.filter){page=1;filter=b.dataset.filter;onlyFav=false;render();document.querySelector('#catalog').scrollIntoView()}
@@ -97,9 +120,9 @@ if(b.dataset.detail!==undefined){e.preventDefault();showDetail(b.dataset.detail)
 document.querySelector('#favorites').onclick=openFavorites;
 document.querySelector('#cartBtn').onclick=openCart;
 document.querySelectorAll('dialog:not(#mobileMenu)').forEach(d=>{d.querySelector('.close').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()}})});
-document.querySelector('#checkout').onclick=()=>{const text='Здравствуйте! Подскажите цену и наличие:\n'+Object.entries(cart).map(([key,n])=>{const {p,v}=cartItem(key);return p.brand+' '+p.name+' / '+v.ref+' / '+v.color+' — '+n+' шт.'}).join('\n');const o=document.querySelector('#orderSummary');o.hidden=false;o.replaceChildren();const p=document.createElement('p');p.textContent=text;p.style.whiteSpace='pre-line';const a=document.createElement('a');a.className='btn primary';const contact=new URL(window.shopSettings?.whatsapp||'https://wa.me/79659695064');contact.searchParams.set('text',text);a.href=contact.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Открыть запрос в WhatsApp';o.append(p,a)};
+document.querySelector('#checkout').onclick=()=>{const text='Здравствуйте! Подскажите цену и наличие:\n'+Object.entries(cart).map(([key,n])=>{const {p,v}=cartItem(key);return p.brand+' '+p.name+' / '+v.ref+' / '+v.color+' — '+n+' шт.'}).join('\n');const o=document.querySelector('#orderSummary');o.hidden=false;o.replaceChildren();const p=document.createElement('p');p.textContent=text;p.style.whiteSpace='pre-line';const a=document.createElement('a');a.className='btn primary';const contact=new URL(window.shopSettings?.whatsapp||'https://wa.me/79626542959');contact.searchParams.set('text',text);a.href=contact.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Открыть запрос в WhatsApp';o.append(p,a)};
 document.querySelector('#year').textContent=new Date().getFullYear();render();
 
-const footerInformation={delivery:{title:'Доставка и оплата',text:'Магазин пока работает как демонстрационная витрина. Реальные заказы и платежи не принимаются. Условия доставки, способы оплаты и сроки будут опубликованы перед запуском продаж.'},returns:{title:'Гарантия и возврат',text:'Условия гарантии и возврата будут добавлены перед запуском продаж после утверждения ассортимента и данных продавца. Наличие и условия покупки конкретной модели уточняйте у магазина.'},contacts:{title:'Связаться с One Second',text:'Наш Instagram: @one_second. Telegram: @onesecondwatch. WhatsApp: +7 965 969-50-64. Напишите нам через ссылки в футере.'},privacy:{title:'Конфиденциальность',text:'Эта витрина сохраняет избранное и состав корзины локально в вашем браузере. Для очистки этих данных удалите данные сайта в настройках браузера. Формы сбора контактных данных и приём платежей сейчас отсутствуют.'}};
+const footerInformation={delivery:{title:'Доставка и оплата',text:'Магазин пока работает как демонстрационная витрина. Реальные заказы и платежи не принимаются. Условия доставки, способы оплаты и сроки будут опубликованы перед запуском продаж.'},returns:{title:'Гарантия и возврат',text:'Условия гарантии и возврата будут добавлены перед запуском продаж после утверждения ассортимента и данных продавца. Наличие и условия покупки конкретной модели уточняйте у магазина.'},contacts:{title:'Связаться с One Second',text:'Наш Instagram: @one_second. Telegram: @onesecondwatch. WhatsApp: +7 962 654-29-59. Напишите нам через ссылки в футере.'},privacy:{title:'Конфиденциальность',text:'Эта витрина сохраняет избранное и состав корзины локально в вашем браузере. Для очистки этих данных удалите данные сайта в настройках браузера. Формы сбора контактных данных и приём платежей сейчас отсутствуют.'}};
 document.addEventListener('click',event=>{const social=event.target.closest('[data-social]');if(social){toast('Ссылка на '+social.dataset.social+' пока не добавлена');return}const button=event.target.closest('[data-info]');if(!button)return;const info=footerInformation[button.dataset.info];document.querySelector('#footerInfoContent').innerHTML='<h2>'+info.title+'</h2><p>'+info.text+'</p>';document.querySelector('#footerInfo').showModal()});
 
