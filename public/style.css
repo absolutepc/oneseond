@@ -91,3 +91,10 @@ footer.site-footer{display:block;background:#0d1420;border-top:1px solid #ffffff
   .page-buttons button{min-width:34px}
   .mobile-nav>a,.mobile-nav>button{font-size:9px}
 }
+
+/* Brand stays inside the photo frame, above its lower-left edge. */
+.product-art .product-brand{position:absolute;left:14px;bottom:12px;right:14px;z-index:2;color:#9bb7d2;font-size:12px;line-height:1.25;letter-spacing:.35px;pointer-events:none;overflow-wrap:anywhere;text-shadow:0 1px 4px #0a0e17}
+@media(max-width:700px){
+  .product-art .product-brand{left:10px;right:10px;bottom:9px;font-size:12px;line-height:1.2}
+  .real-product .image-button{padding-bottom:34px}
+}
