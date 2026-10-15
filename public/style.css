@@ -184,3 +184,17 @@ body{background:#080b12}
  .hero-editorial .hero-feature-card{width:122px}
 }
 @media(prefers-reduced-motion:reduce){.hero-editorial .hero-feature-card{transition:none}}
+
+/* Seamless brand ribbon. Each repeated group has identical width and spacing. */
+.brand-carousel{--brand-gap:12px}
+.brand-carousel-tools{display:flex;justify-content:flex-end;margin-bottom:12px}
+.brand-motion-toggle{border:1px solid #ffffff20;border-radius:20px;background:#131e2f;color:#a9c9ed;padding:8px 14px;font-size:12px;min-height:40px}
+.brand-carousel-viewport{overflow:hidden;border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12;padding:18px 0}
+.brand-carousel-track{display:flex;width:max-content;animation:brand-ribbon 65s linear infinite}
+.brand-carousel-group{display:flex;align-items:center;gap:var(--brand-gap);padding-right:var(--brand-gap);flex-shrink:0}
+.brand-carousel-group a{display:flex;align-items:center;justify-content:center;flex-shrink:0;min-height:68px;padding:16px 28px;white-space:nowrap;border:1px solid #ffffff14;border-radius:12px;background:#131e2f;color:#e5eef9;font-size:16px;font-weight:600}
+.brand-carousel-group a:hover{background:#1c3554;border-color:#62b5ff}
+.brand-carousel:hover .brand-carousel-track,.brand-carousel:focus-within .brand-carousel-track,.brand-carousel.is-paused .brand-carousel-track{animation-play-state:paused}
+@keyframes brand-ribbon{to{transform:translateX(-50%)}}
+@media(max-width:700px){.brand-carousel-group a{min-height:56px;padding:12px 20px;font-size:14px}.brand-carousel-viewport{padding:12px 0}}
+@media(prefers-reduced-motion:reduce){.brand-carousel-track{animation:none}.brand-carousel-copy,.brand-carousel-tools{display:none}.brand-carousel-viewport{overflow-x:auto}}
