@@ -1,9 +1,9 @@
 import { env } from 'cloudflare:workers';
-import { getChatGPTUser } from '../app/chatgpt-auth';
+import {requireAdmin} from './admin-auth';
 import seed from './seed.json';
 import { catalogSchema } from './catalog-validation';
 export const initialCatalog=catalogSchema.parse(seed);
-export async function requireOwner(){const user=await getChatGPTUser();if(!user)throw new Error('UNAUTHORIZED');if(!env.DB)throw new Error('DB unavailable');let row=await env.DB.prepare('SELECT user_id FROM shop_owner WHERE id = ?').bind('owner').first<{user_id:string}>();if(!row){if(user.email.toLowerCase()!=='u.dakaev2016@gmail.com')throw new Error('FORBIDDEN');await env.DB.prepare('INSERT OR IGNORE INTO shop_owner(id,user_id) VALUES(?,?)').bind('owner',user.userId).run();row=await env.DB.prepare('SELECT user_id FROM shop_owner WHERE id = ?').bind('owner').first<{user_id:string}>()}if(row?.user_id!==user.userId)throw new Error('FORBIDDEN');return user}
+export const requireOwner=requireAdmin;
 export function checkOrigin(request:Request){const origin=request.headers.get('origin');if(origin!==new URL(request.url).origin)throw new Error('BAD_ORIGIN')}
 export async function readCatalog(){
   if(!env.DB)throw new Error('DB unavailable');
@@ -14,4 +14,4 @@ export async function readCatalog(){
   return row?{document:catalogSchema.parse(JSON.parse(row.body)),revision:row.revision,updatedAt:row.updated_at}:{document:initialCatalog,revision:0,updatedAt:null};
 }
 export async function ensureCatalog(){await env.DB!.prepare('INSERT OR IGNORE INTO catalog_state(id,body,revision,updated_at) VALUES(?,?,?,?)').bind('catalog',JSON.stringify(initialCatalog),0,new Date().toISOString()).run()}
-export function apiError(error:unknown){const m=error instanceof Error?error.message:'Ошибка сервера';const status=m==='UNAUTHORIZED'?401:m==='FORBIDDEN'||m==='BAD_ORIGIN'?403:500;return Response.json({error:status===401?'Войдите через ChatGPT':status===403?'Нет доступа':'Не удалось выполнить операцию'}, {status,headers:{'Cache-Control':'no-store'}})}
+export function apiError(error:unknown){const m=error instanceof Error?error.message:'Ошибка сервера';const status=m==='UNAUTHORIZED'?401:m==='FORBIDDEN'||m==='BAD_ORIGIN'?403:500;return Response.json({error:status===401?'Войдите в админ-панель':status===403?'Нет доступа':'Не удалось выполнить операцию'}, {status,headers:{'Cache-Control':'no-store'}})}
