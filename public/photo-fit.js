@@ -1,6 +1,9 @@
 /* Fit the visible watch silhouette, rather than the transparent image canvas. */
 (function(root){
  const bounds={
+  'pwg1014-075.webp':{width:344,height:600,left:0,top:0,right:344,bottom:600},
+  'pwg1014-375.webp':{width:338,height:600,left:0,top:0,right:338,bottom:600},
+  'pwg1014-499.webp':{width:356,height:600,left:0,top:0,right:356,bottom:600},
   'pwg930-390.webp':{width:1254,height:1254,left:297,top:90,right:1011,bottom:1208},
   'pwg930-370.webp':{width:1122,height:1402,left:131,top:17,right:1001,bottom:1386},
   'pwg1092-380.webp':{width:362,height:600,left:0,top:0,right:362,bottom:600},
