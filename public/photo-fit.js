@@ -3,8 +3,8 @@
  const bounds={
   'pwg930-390.webp':{width:1254,height:1254,left:297,top:90,right:1011,bottom:1208},
   'pwg930-370.webp':{width:1122,height:1402,left:131,top:17,right:1001,bottom:1386},
-  'pwg1092-380.webp':{width:1254,height:1254,left:275,top:25,right:1023,bottom:1231,groupAspect:1181/673},
-  'pwg1092-370.webp':{width:1254,height:1254,left:310,top:58,right:983,bottom:1239,groupAspect:1181/673}
+  'pwg1092-380.webp':{width:1254,height:1254,left:249,top:13,right:1050,bottom:1245,groupAspect:1.646437994722955},
+  'pwg1092-370.webp':{width:1254,height:1254,left:272,top:1,right:1030,bottom:1249,groupAspect:1.646437994722955}
  };
  function placement(boxWidth,boxHeight,b){
   if(!boxWidth||!boxHeight)return null;
