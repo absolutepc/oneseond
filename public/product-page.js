@@ -1,13 +1,21 @@
 (() => {
  const {product:p,whatsapp}=JSON.parse(document.getElementById('productData').textContent);
- const $=id=>document.getElementById(id), imageUrl=v=>v.image.startsWith('assets/')?'/'+v.image:v.image;
+ const $=id=>document.getElementById(id), normalizeImage=src=>src.startsWith('assets/')?'/'+src:src;
  const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))||fallback}catch{return fallback}};
  const notice=text=>$('productNotice').textContent=text;
  let index=Math.max(0,p.variants.findIndex(v=>v.ref===new URL(location.href).searchParams.get('color')));
  function render(updateUrl=false){
   const v=p.variants[index],url=new URL(location.href);url.searchParams.set('color',v.ref);
   if(updateUrl)history.replaceState(null,'',url);
-  $('mainPhoto').src=imageUrl(v);$('mainPhoto').alt=p.brand+' '+p.name+' '+v.color;
+  const photos=[...new Set([v.image,...(v.gallery||[])].filter(Boolean).map(normalizeImage))];
+  const showPhoto=i=>{
+   $('mainPhoto').src=photos[i];$('mainPhoto').alt=p.brand+' '+p.name+' '+v.color+' — фото '+(i+1);
+   if($('photoDialog').open){$('zoomImage').src=photos[i];$('zoomImage').alt=$('mainPhoto').alt}
+   $('galleryThumbnails').querySelectorAll('button').forEach((b,j)=>{b.classList.toggle('active',i===j);b.setAttribute('aria-pressed',String(i===j))});
+  };
+  $('galleryThumbnails').replaceChildren();
+  photos.forEach((src,i)=>{const button=document.createElement('button');button.type='button';button.setAttribute('aria-label',v.color+' — фото '+(i+1));const img=document.createElement('img');img.src=src;img.alt=v.color+' — фото '+(i+1);img.loading='lazy';button.append(img);button.onclick=()=>showPhoto(i);$('galleryThumbnails').append(button)});
+  showPhoto(0);
   $('productReference').textContent='Артикул: '+v.ref;$('productColor').textContent='Цвет: '+v.color;
   $('productOldPrice').hidden=!(v.price!=null&&v.oldPrice>v.price);$('productOldPrice').textContent=v.oldPrice==null?'':v.oldPrice.toLocaleString('ru-RU')+' ₽';
   $('productPrice').textContent=v.price==null?'Цена по запросу':v.price.toLocaleString('ru-RU')+' ₽';
@@ -17,9 +25,8 @@
   document.querySelectorAll('[data-color-index]').forEach(b=>{const active=Number(b.dataset.colorIndex)===index;b.setAttribute('aria-pressed',String(active));b.classList.toggle('active',active)});
  }
  p.variants.forEach((v,i)=>{
-  const thumb=document.createElement('button');thumb.dataset.colorIndex=i;thumb.setAttribute('aria-label','Показать '+v.color);const image=document.createElement('img');image.src=imageUrl(v);image.alt=v.color;image.loading='lazy';thumb.append(image);$('galleryThumbnails').append(thumb);
   const swatch=document.createElement('button');swatch.className='swatch';swatch.dataset.colorIndex=i;swatch.setAttribute('aria-label',v.color+' — '+v.ref);swatch.title=v.color;const dot=document.createElement('span');dot.style.background=v.hex;swatch.append(dot);$('productColors').append(swatch);
-  [thumb,swatch].forEach(b=>b.addEventListener('click',()=>{index=i;render(true)}));
+  swatch.addEventListener('click',()=>{index=i;render(true)});
  });
  $('addToCart').onclick=()=>{const v=p.variants[index];if(v.stock==='out_of_stock')return;try{const cart=read('os-real-cart',{}),key=p.id+'::'+v.ref;cart[key]=(Number.isInteger(cart[key])?cart[key]:0)+1;localStorage.setItem('os-real-cart',JSON.stringify(cart));refreshHeader();notice('Выбранный цвет добавлен в корзину. Корзина доступна в каталоге.')}catch{notice('Браузер не разрешает сохранить корзину.')}};
  function favorite(){const list=read('os-real-fav',[]);return Array.isArray(list)?list:[]}
