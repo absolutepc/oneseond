@@ -4,7 +4,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const money=n=>n.toLocaleString('ru-RU')+' ₽';const products=window.watchCatalog;const byId=id=>products.find(p=>p.id===id);const selected={};const variant=p=>p.variants[selected[p.id]||0];const variantKey=(p,v)=>p.id+'::'+v.ref;const availability=v=>({in_stock:'В наличии',out_of_stock:'Нет в наличии',preorder:'Под заказ'}[v.stock]||'Наличие уточняется');const priceLabel=v=>v.price==null?'Цена по запросу':money(v.price);
 let cart={},fav=[];try{cart=JSON.parse(localStorage.getItem('os-real-cart'))||{};fav=JSON.parse(localStorage.getItem('os-real-fav'))||[]}catch{};
 const cartItem=key=>{for(const p of products){const v=p.variants.find(v=>variantKey(p,v)===key);if(v)return {p,v}}return null};
-cart=Object.fromEntries(Object.entries(cart).filter(([key,n])=>cartItem(key)&&Number.isInteger(n)&&n>0));fav=Array.isArray(fav)?fav.filter(id=>byId(id)):[];let filter='Все',onlyFav=false,detailId=null,page=1,pageCount=1;
+cart=Object.fromEntries(Object.entries(cart).filter(([key,n])=>cartItem(key)&&Number.isInteger(n)&&n>0));fav=Array.isArray(fav)?fav.filter(id=>byId(id)):[];const favoritesPage=location.pathname.replace(/\/$/,'')==='/favorites';let filter='Все',onlyFav=favoritesPage,detailId=null,page=1,pageCount=1;
 const mobileCatalog=window.matchMedia('(max-width: 700px)');
 function persist(){
   try{localStorage.setItem('os-real-cart',JSON.stringify(cart));localStorage.setItem('os-real-fav',JSON.stringify(fav))}catch{}
@@ -21,7 +21,7 @@ function persist(){
 }
 function toast(t){const node=document.querySelector('#toast');node.textContent=t;node.classList.add('show');clearTimeout(window.toastTimeout);window.toastTimeout=setTimeout(()=>node.classList.remove('show'),2200)}
 function swatches(p){return `<div class="swatches" role="group" aria-label="Варианты ${esc(p.name)}">${p.variants.map((v,i)=>`<button class="swatch ${i===(selected[p.id]||0)?'active':''}" data-variant="${esc(p.id)}" data-index="${i}" aria-label="${esc(v.color)} — ${esc(v.ref)}" aria-pressed="${i===(selected[p.id]||0)}" title="${esc(v.color)} — ${esc(v.ref)}"><span style="background:${esc(v.hex||'#8390a0')}"></span></button>`).join('')}<span class="variant-color">${esc(variant(p).color)}</span></div>`}
-function card(p){const v=variant(p);return `<article class="product" data-product-id="${esc(p.id)}"><div class="product-art real-product"><button class="heart ${fav.includes(p.id)?'selected':''}" data-fav="${esc(p.id)}" aria-label="Избранное: ${esc(p.name)}" aria-pressed="${fav.includes(p.id)}"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button><span class="badge">${esc(p.type)}</span><a href="${esc(productUrl(p,v))}" aria-label="Подробнее о ${esc(p.name)}" class="image-button"><img src="${esc(v.image)}" alt="${esc(p.brand+' '+p.name+' '+v.ref)}" loading="lazy" width="320" height="320"></a><small class="product-brand" title="${esc(p.brand)}">${esc(p.brand)}</small></div><div class="product-info"><h3><a href="${esc(productUrl(p,v))}" class="product-page-link">${esc(p.name)}</a></h3><p class="product-specs">${esc([p.mechanism,p.size].filter(Boolean).join(' · ')||p.type)}</p>${swatches(p)}<p class="product-ref ${v.stock?'has-stock':''}"><span class="product-sku">Арт. ${esc(v.ref)} · </span><span class="product-availability">${availability(v)}</span></p><div class="price-row"><strong class="request-price">${priceLabel(v)}</strong><button data-add="${esc(p.id)}" ${v.stock==='out_of_stock'?'disabled':''}>${v.stock==='out_of_stock'?'Нет в наличии':'В корзину +'}</button></div></div></article>`}
+function card(p){const v=variant(p);return `<article class="product" data-product-id="${esc(p.id)}"><div class="product-art real-product"><button class="heart ${fav.includes(p.id)?'selected':''}" data-fav="${esc(p.id)}" aria-label="Избранное: ${esc(p.name)}" aria-pressed="${fav.includes(p.id)}"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button><span class="badge">${esc(p.type)}</span><a href="${esc(productUrl(p,v))}" aria-label="Подробнее о ${esc(p.name)}" class="image-button"><img src="${esc(v.image)}" alt="${esc(p.brand+' '+p.name+' '+v.ref)}" loading="lazy" width="320" height="320"></a><small class="product-brand" title="${esc(p.brand)}">${esc(p.brand)}</small></div><div class="product-info"><h3><a href="${esc(productUrl(p,v))}" class="product-page-link">${esc(p.name)}</a></h3><p class="product-specs">${esc([p.mechanism,p.size].filter(Boolean).join(' · ')||p.type)}</p>${swatches(p)}<p class="product-ref ${v.stock?'has-stock':''}"><span class="product-sku">Арт. ${esc(v.ref)} · </span><span class="product-availability">${availability(v)}</span></p><div class="price-row"><div class="price-values"><del class="old-price" ${catalogFilters.discounted(v)?'':'hidden'}>${v.oldPrice==null?'':money(v.oldPrice)}</del><strong class="request-price">${priceLabel(v)}</strong><span class="discount-label" ${catalogFilters.discounted(v)?'':'hidden'}>${catalogFilters.discounted(v)?'−'+Math.round((1-v.price/v.oldPrice)*100)+'%':''}</span></div><button data-add="${esc(p.id)}" ${v.stock==='out_of_stock'?'disabled':''}>${v.stock==='out_of_stock'?'Нет в наличии':'В корзину +'}</button></div></div></article>`}
 function updateCardVariant(p){
   const root=document.querySelector(`[data-product-id="${p.id}"]`);
   if(!root)return;
@@ -38,7 +38,7 @@ function updateCardVariant(p){
   root.querySelector('.product-ref').classList.toggle('has-stock',!!v.stock);
   root.querySelector('.product-sku').textContent='Арт. '+v.ref+' · ';
   root.querySelector('.product-availability').textContent=availability(v);
-  root.querySelector('.request-price').textContent=priceLabel(v);
+  root.querySelector('.request-price').textContent=priceLabel(v);const old=root.querySelector('.old-price'),discount=root.querySelector('.discount-label');old.hidden=discount.hidden=!catalogFilters.discounted(v);old.textContent=v.oldPrice==null?'':money(v.oldPrice);discount.textContent=catalogFilters.discounted(v)?'−'+Math.round((1-v.price/v.oldPrice)*100)+'%':'';
   const add=root.querySelector('[data-add]');
   add.disabled=v.stock==='out_of_stock';
   add.textContent=add.disabled?'Нет в наличии':'В корзину +';
@@ -57,8 +57,11 @@ function renderPagination(total,start,end){
   });
 }
 function render(){
+  const extra={min:document.querySelector('#priceMin').value,max:document.querySelector('#priceMax').value,gender:document.querySelector('#genderFilter').value,color:document.querySelector('#colorFilter').value,sale:document.querySelector('#saleFilter').checked};
+  const invalidRange=extra.min!==''&&extra.max!==''&&Number(extra.min)>Number(extra.max);const error=document.querySelector('#priceFilterError');error.hidden=!invalidRange;error.textContent=invalidRange?'Цена «От» не должна превышать цену «До».':'';
   const brand=document.querySelector('#brandFilter').value,q=document.querySelector('#search').value.trim().toLowerCase();
   let list=products.filter(p=>(!brand||p.brand===brand)&&(filter==='Все'||p.type===filter)&&(!onlyFav||fav.includes(p.id))&&[p.brand,p.name,p.type,...p.variants.map(v=>v.ref+' '+v.color)].join(' ').toLowerCase().includes(q));
+  list=list.filter(p=>{const matches=catalogFilters.matchingVariants(p,extra);if(!matches.length)return false;if(!matches.includes(selected[p.id]||0))selected[p.id]=matches[0];return true});
   const sort=document.querySelector('#sort').value;
   if(sort==='name')list.sort((a,b)=>(a.brand+' '+a.name).localeCompare(b.brand+' '+b.name));
   if(sort==='brand')list.sort((a,b)=>a.brand.localeCompare(b.brand));
@@ -66,25 +69,21 @@ function render(){
   pageCount=Math.max(1,Math.ceil(list.length/pageSize));
   page=Math.min(Math.max(page,1),pageCount);
   const start=(page-1)*pageSize,end=Math.min(start+pageSize,list.length);
-  document.querySelector('#products').innerHTML=list.length?list.slice(start,end).map(card).join(''):'<div class="empty">По выбранным условиям часы не найдены.<br><button class="btn secondary" id="resetFilters" style="margin-top:20px">Сбросить фильтры</button></div>';
+  document.querySelector('#products').innerHTML=favoritesPage&&!fav.length?'<div class="empty"><h3>В избранном пока пусто</h3><p>Нажмите на сердечко у понравившихся часов.</p><a class="btn primary" href="/#catalog">Перейти в каталог</a></div>':list.length?list.slice(start,end).map(card).join(''):'<div class="empty">По выбранным условиям часы не найдены.<br><button class="btn secondary" id="resetFilters" style="margin-top:20px">Сбросить фильтры</button></div>';
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.filter===filter&&!onlyFav));
   document.querySelector('#catalogCount').textContent=(onlyFav?'Избранное · ':'')+list.length+' моделей';
   renderPagination(list.length,start,end);
   persist();
 }
 function resetCatalog(){
-  page=1;filter='Все';onlyFav=false;
+  page=1;filter='Все';onlyFav=favoritesPage;
   document.querySelector('#brandFilter').value='';
   document.querySelector('#search').value='';
+  ['priceMin','priceMax','genderFilter','colorFilter'].forEach(id=>document.getElementById(id).value='');document.getElementById('saleFilter').checked=false;
   render();
 }
-function openFavorites(){
-  onlyFav=!onlyFav;page=1;filter='Все';
-  document.querySelector('#brandFilter').value='';
-  document.querySelector('#search').value='';
-  render();document.querySelector('#catalog').scrollIntoView();
-  toast(onlyFav?'Показаны избранные часы':'Показаны все часы');
-}
+function openFavorites(){location.assign('/favorites')}
+
 function openCart(){showCart();if(!document.querySelector('#cartModal').open)document.querySelector('#cartModal').showModal()}
 mobileCatalog.addEventListener('change',()=>{page=1;render()});
 function showDetail(id,open=true){const p=byId(id);if(!p)return;detailId=id;const v=variant(p);document.querySelector('#productDetail').innerHTML=`<div class="detail-grid"><div class="detail-image"><img src="${esc(v.image)}" alt="${esc(p.brand+' '+p.name+' '+v.ref)}"></div><div><div class="eyebrow">${esc(p.brand)}</div><h2>${esc(p.name)}</h2>${swatches(p)}<dl><dt>Артикул выбранного варианта</dt><dd>${esc(v.ref)}</dd>${[['Механизм',p.mechanism],['Размер корпуса',p.size],['Материалы',p.material]].filter(x=>x[1]).map(([k,val])=>'<dt>'+k+'</dt><dd>'+esc(val)+'</dd>').join('')}</dl>${v.source||p.source?`<a class="source-link" href="${esc(v.source||p.source)}" target="_blank" rel="noopener noreferrer">Характеристики у источника <span class="decorative-arrow" aria-hidden="true">↗</span></a>`:''}<h3>${priceLabel(v)}</h3><p class="muted">${availability(v)}</p><button class="btn primary" data-add="${esc(p.id)}" ${v.stock==='out_of_stock'?'disabled':''}>Добавить выбранный вариант</button></div></div>`;if(open&&!document.querySelector('#productModal').open)document.querySelector('#productModal').showModal()}
@@ -109,8 +108,8 @@ if(b.dataset.variant!==undefined){
   }
   return;
 }
-if(b.dataset.filter){page=1;filter=b.dataset.filter;onlyFav=false;render();document.querySelector('#catalog').scrollIntoView()}
-if(b.dataset.brand){page=1;document.querySelector('#brandFilter').value=b.dataset.brand;filter='Все';onlyFav=false;document.querySelector('#search').value='';render()}
+if(b.dataset.filter){page=1;filter=b.dataset.filter;onlyFav=favoritesPage;render();document.querySelector('#catalog').scrollIntoView()}
+if(b.dataset.brand){page=1;document.querySelector('#brandFilter').value=b.dataset.brand;filter='Все';onlyFav=favoritesPage;document.querySelector('#search').value='';render()}
 if(b.id==='resetFilters'){resetCatalog()}
 if(b.dataset.add!==undefined){const p=byId(b.dataset.add);if(variant(p).stock==='out_of_stock')return;const key=variantKey(p,variant(p));cart[key]=(cart[key]||0)+1;showCart();toast('Выбранный вариант добавлен в корзину')}
 if(b.dataset.fav!==undefined){const id=b.dataset.fav;fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];render()}
@@ -118,7 +117,8 @@ if(b.dataset.minus!==undefined){if(--cart[b.dataset.minus]<=0)delete cart[b.data
 if(b.dataset.plus!==undefined){cart[b.dataset.plus]++;showCart()}
 if(b.dataset.remove!==undefined){delete cart[b.dataset.remove];showCart()}
 if(b.dataset.detail!==undefined){e.preventDefault();showDetail(b.dataset.detail)}});
-['#search','#sort','#brandFilter'].forEach(s=>document.querySelector(s).addEventListener(s==='#search'?'input':'change',()=>{page=1;render()}));
+['#search','#sort','#brandFilter','#priceMin','#priceMax','#genderFilter','#colorFilter','#saleFilter'].forEach(s=>document.querySelector(s).addEventListener(['#search','#priceMin','#priceMax'].includes(s)?'input':'change',()=>{page=1;render()}));
+document.querySelector('#clearCatalogFilters').onclick=resetCatalog;
 document.querySelector('#favorites').onclick=openFavorites;
 document.querySelector('#cartBtn').onclick=openCart;
 document.querySelectorAll('dialog:not(#mobileMenu)').forEach(d=>{d.querySelector('.close').onclick=()=>d.close();d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()}})});
@@ -131,3 +131,5 @@ document.addEventListener('click',event=>{const social=event.target.closest('[da
 
 // Open shared header actions when arriving from a product page.
 {const url=new URL(location.href),view=url.searchParams.get('view');if(view==='cart'||view==='favorites'){if(view==='cart')openCart();else openFavorites();url.searchParams.delete('view');history.replaceState(null,'',url);}}
+
+window.addEventListener('storage',event=>{if(event.key==='os-real-fav'){try{const values=JSON.parse(event.newValue||'[]');fav=Array.isArray(values)?values.filter(id=>byId(id)):[]}catch{fav=[]}render()}});

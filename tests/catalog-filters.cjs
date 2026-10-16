@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');
+require('../public/catalog-filters.js');
+const {matchingVariants,discounted}=globalThis.catalogFilters;
+const p={gender:'women',variants:[{color:'Чёрный',price:1000,oldPrice:1500},{color:'Белый',price:2000},{color:'Синий',price:null}]};
+assert.deepEqual(matchingVariants(p,{color:'Белый',max:1500}),[]);
+assert.deepEqual(matchingVariants(p,{min:1000,max:1000,sale:true}),[0]);
+assert.deepEqual(matchingVariants(p,{min:0}),[0,1]);
+assert.deepEqual(matchingVariants(p,{min:2000,max:1000}),[]);
+assert.deepEqual(matchingVariants(p,{gender:'men'}),[]);
+assert.deepEqual(matchingVariants({...p,gender:undefined},{gender:'women'}),[]);
+assert.deepEqual(matchingVariants({...p,gender:'unisex'},{gender:'men',color:'Белый'}),[1]);
+assert.equal(discounted({price:null,oldPrice:1500}),false);
+assert.equal(discounted({price:1500,oldPrice:1500}),false);
+console.log('Catalog filters: passed');

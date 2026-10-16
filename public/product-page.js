@@ -9,6 +9,7 @@
   if(updateUrl)history.replaceState(null,'',url);
   $('mainPhoto').src=imageUrl(v);$('mainPhoto').alt=p.brand+' '+p.name+' '+v.color;
   $('productReference').textContent='Артикул: '+v.ref;$('productColor').textContent='Цвет: '+v.color;
+  $('productOldPrice').hidden=!(v.price!=null&&v.oldPrice>v.price);$('productOldPrice').textContent=v.oldPrice==null?'':v.oldPrice.toLocaleString('ru-RU')+' ₽';
   $('productPrice').textContent=v.price==null?'Цена по запросу':v.price.toLocaleString('ru-RU')+' ₽';
   $('productStock').textContent=({in_stock:'В наличии',out_of_stock:'Нет в наличии',preorder:'Под заказ'}[v.stock]||'Наличие уточняется');
   $('addToCart').disabled=v.stock==='out_of_stock';
@@ -32,7 +33,7 @@
    const cart=read('os-real-cart',{}),count=Object.values(cart).reduce((n,q)=>n+(Number.isInteger(q)&&q>0?q:0),0);
    [['[data-cart-count]',count],['[data-fav-count]',favorite().length]].forEach(([selector,total])=>document.querySelectorAll(selector).forEach(node=>{node.textContent=total;if(node.classList.contains('nav-count'))node.hidden=total===0}));
  }
- document.querySelectorAll('#favorites,[data-shop-action="favorites"]').forEach(b=>b.onclick=()=>location.assign('/?view=favorites#catalog'));
+ document.querySelectorAll('#favorites,[data-shop-action="favorites"]').forEach(b=>b.onclick=()=>location.assign('/favorites'));
  document.querySelectorAll('#cartBtn,[data-shop-action="cart"]').forEach(b=>b.onclick=()=>location.assign('/?view=cart#catalog'));
  const menu=$('mobileMenu');
  document.querySelectorAll('[data-menu-open]').forEach(b=>b.onclick=()=>menu.showModal());

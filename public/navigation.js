@@ -4,7 +4,7 @@
   const nav = document.querySelector('.mobile-nav');
   const links = [...nav.querySelectorAll('[data-nav-section]')];
   const sections = ['top', 'brands', 'collections', 'catalog', 'about', 'contacts']
-    .map(id => document.getElementById(id));
+    .map(id => document.getElementById(id)).filter(Boolean);
   let scheduled = false;
 
   function updateActiveSection() {
@@ -13,7 +13,7 @@
     for (const section of sections) {
       if (section.getBoundingClientRect().top <= 110) current = section.id;
     }
-    const selected = current === 'catalog' && window.shopOnlyFavorites
+    const selected = window.shopOnlyFavorites
       ? 'favorites' : ['catalog', 'brands'].includes(current) ? current : 'menu';
     links.forEach(link => {
       const active = link.dataset.navSection === selected;
@@ -41,8 +41,9 @@
       event.preventDefault();
       menu.close();
       const hash = link.getAttribute('href');
+      if (!hash.startsWith('#')) { location.assign(hash); return; }
       history.replaceState(null, '', hash);
-      requestAnimationFrame(() => document.querySelector(hash).scrollIntoView());
+      requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView());
     } else if (event.target === menu) {
       const rect = menu.getBoundingClientRect();
       if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) menu.close();
