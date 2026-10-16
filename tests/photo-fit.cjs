@@ -16,3 +16,11 @@ for(const [width,height] of [[300,250],[150,132],[110,96],[400,420],[640,540]]){
 }
 assert.equal(placement(0,0,Object.values(bounds)[0]),null);
 console.log('Watch photos: equal visible heights and centered silhouettes across cards, thumbnails and gallery sizes.');
+
+for(const [w,h] of [[300,250],[150,132],[400,420]]){
+ const widths=['pwg1092-380.webp','pwg1092-370.webp'].map(name=>{
+  const b=bounds[name],p=placement(w,h,b);
+  return (b.right-b.left)*Math.min(w/b.width,h/b.height)*p.scale;
+ });
+ assert(Math.abs(widths[0]-widths[1])<.001,'PWG1092 cases must have equal widths');
+}

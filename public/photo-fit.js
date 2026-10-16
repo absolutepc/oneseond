@@ -2,12 +2,14 @@
 (function(root){
  const bounds={
   'pwg930-390.webp':{width:1254,height:1254,left:297,top:90,right:1011,bottom:1208},
-  'pwg930-370.webp':{width:1122,height:1402,left:131,top:17,right:1001,bottom:1386}
+  'pwg930-370.webp':{width:1122,height:1402,left:131,top:17,right:1001,bottom:1386},
+  'pwg1092-380.webp':{width:1254,height:1254,left:275,top:25,right:1023,bottom:1231,groupAspect:1181/673},
+  'pwg1092-370.webp':{width:1254,height:1254,left:310,top:58,right:983,bottom:1239,groupAspect:1181/673}
  };
  function placement(boxWidth,boxHeight,b){
   if(!boxWidth||!boxHeight)return null;
   const fitted=Math.min(boxWidth/b.width,boxHeight/b.height);
-  const visible=Math.min(boxWidth*.9/(b.right-b.left),boxHeight*.9/(b.bottom-b.top));
+  const visible=Math.min(boxWidth*.9/(b.right-b.left),boxHeight*.9/(b.groupAspect?(b.right-b.left)*b.groupAspect:b.bottom-b.top));
   return {scale:visible/fitted,x:-(b.left+b.right-b.width)*visible/2,y:-(b.top+b.bottom-b.height)*visible/2};
  }
  root.watchPhotoFit={bounds,placement};
