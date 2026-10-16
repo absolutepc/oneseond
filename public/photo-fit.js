@@ -1,6 +1,8 @@
 /* Fit the visible watch silhouette, rather than the transparent image canvas. */
 (function(root){
  const bounds={
+  'qmg1226-360.webp':{width:301,height:600,left:0,top:0,right:301,bottom:600},
+  'qmg1226-370.webp':{width:301,height:600,left:0,top:0,right:301,bottom:600},
   'pwg1014-075.webp':{width:344,height:600,left:0,top:0,right:344,bottom:600},
   'pwg1014-375.webp':{width:338,height:600,left:0,top:0,right:338,bottom:600},
   'pwg1014-499.webp':{width:356,height:600,left:0,top:0,right:356,bottom:600},
