@@ -129,7 +129,7 @@ body{background:#080b12}
 .hero-editorial .hero-backword{position:absolute;z-index:0;top:40%;left:50%;transform:translateX(-50%);width:max-content;max-width:none;font-size:clamp(86px,14vw,206px);line-height:1;font-weight:900;letter-spacing:-.065em;white-space:nowrap;color:#afc9e5;opacity:.065;pointer-events:none}
 .hero-editorial .hero-glow{position:absolute;z-index:0;left:16%;right:15%;bottom:-220px;height:510px;background:radial-gradient(ellipse at center,#4073aa48 0%,#1a3e6630 39%,transparent 75%);pointer-events:none}
 .hero-editorial .hero-feature-watch{position:absolute;z-index:2;bottom:-100px;left:50%;transform:translateX(-50%) rotate(-12deg);height:600px;width:610px;max-width:none;object-fit:contain;filter:drop-shadow(0 40px 34px #000a);pointer-events:none}
-.hero-editorial .hero-bottomline{position:absolute;z-index:4;left:clamp(36px,6vw,94px);right:clamp(36px,6vw,94px);bottom:28px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.hero-editorial .hero-bottomline{position:absolute;z-index:4;left:clamp(36px,6vw,94px);right:clamp(36px,6vw,94px);bottom:28px;display:flex;justify-content:flex-end;align-items:flex-end;gap:20px}
 .hero-editorial .hero-edition{display:flex;align-items:center;gap:12px;color:#a6b6c9;font-size:10px;letter-spacing:1.2px}
 .hero-editorial .edition-line{width:58px;height:1px;background:linear-gradient(90deg,#7cb7f5 38%,#485467 38%)}
 .hero-editorial .hero-feature-card{display:flex;align-items:center;gap:10px;width:214px;height:130px;overflow:hidden;padding:9px 10px;border:1px solid #53647a;border-radius:12px;background:linear-gradient(125deg,#1b2a40,#0e1725);box-shadow:0 12px 28px #0005;transition:border-color .2s,transform .2s}
