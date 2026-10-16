@@ -108,7 +108,7 @@ body{background:#080b12}
 .site-header .desktop-links{grid-column:1;grid-row:1;display:flex;align-items:center;justify-content:flex-start;gap:clamp(9px,1.4vw,24px);white-space:nowrap;font-size:11px;font-weight:650;letter-spacing:.02em;color:#9aa7b8}
 .site-header .desktop-links a{transition:color .2s}
 .site-header .desktop-links a:hover{color:#f4f8ff}
-.site-header .desktop-links .nav-home{padding:7px 12px;border-radius:20px;background:#252d3a;color:#fff}
+.site-header .desktop-links a{font:inherit;line-height:inherit;letter-spacing:inherit;padding:0;border:0;border-radius:0;background:transparent}
 .site-header .logo{grid-column:2;grid-row:1;justify-self:center;display:flex;gap:7px;align-items:center;font-size:21px;line-height:1;font-weight:700;letter-spacing:3px;white-space:nowrap;color:#f4f6fb}
 .site-header .logo b{color:#7cb7f5;font-weight:700}
 .site-header .actions{grid-column:3;grid-row:1;justify-self:end;margin:0;display:flex;align-items:center;gap:8px}
@@ -204,7 +204,6 @@ body{background:#080b12}
 .favorites-page .catalog-section{padding:42px 0 48px;background:transparent}
 .favorites-page .catalog-section>.wrap{max-width:none;padding:0 34px}
 .favorites-page #favorites[aria-current="page"]{border-color:#6594c7;background:#1b304a}
-.favorites-page .site-header .desktop-links a[href="/#top"]{background:none;color:inherit}
 .product-art .product-brand{right:90px}
 .product-art .product-brand-logo{position:absolute;right:14px;bottom:10px;width:64px;height:28px;max-width:64px;max-height:28px;object-fit:contain;transform:none;margin:0;filter:brightness(0) invert(1);opacity:.85;pointer-events:none;z-index:2}
 @media(max-width:700px){
