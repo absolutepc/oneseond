@@ -54,15 +54,3 @@
   document.addEventListener('shop:navigation', requestUpdate);
   updateActiveSection();
 })();
-
-/* Let visitors stop the moving brand ribbon. */
-(() => {
-  const carousel = document.querySelector('.brand-carousel');
-  const toggle = carousel?.querySelector('.brand-motion-toggle');
-  if (!toggle) return;
-  toggle.addEventListener('click', () => {
-    const paused = carousel.classList.toggle('is-paused');
-    toggle.setAttribute('aria-pressed', String(paused));
-    toggle.textContent = paused ? 'Продолжить ленту' : 'Приостановить ленту';
-  });
-})();

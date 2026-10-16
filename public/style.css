@@ -187,21 +187,14 @@ body{background:#080b12}
 
 /* Seamless brand ribbon. Each repeated group has identical width and spacing. */
 .brand-carousel{--brand-gap:12px}
-.brand-carousel-tools{display:flex;justify-content:flex-end;margin-bottom:12px}
-.brand-motion-toggle{border:1px solid #ffffff20;border-radius:20px;background:#131e2f;color:#a9c9ed;padding:8px 14px;font-size:12px;min-height:40px}
 .brand-carousel-viewport{overflow:hidden;border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12;padding:18px 0}
 .brand-carousel-track{display:flex;width:max-content;animation:brand-ribbon 65s linear infinite}
 .brand-carousel-group{display:flex;align-items:center;gap:var(--brand-gap);padding-right:var(--brand-gap);flex-shrink:0}
-.brand-carousel-group a{display:flex;align-items:center;justify-content:center;flex-shrink:0;min-height:68px;padding:16px 28px;white-space:nowrap;border:1px solid #ffffff14;border-radius:12px;background:#131e2f;color:#e5eef9;font-size:16px;font-weight:600}
-.brand-carousel-group a:hover{background:#1c3554;border-color:#62b5ff}
-.brand-carousel:hover .brand-carousel-track,.brand-carousel:focus-within .brand-carousel-track,.brand-carousel.is-paused .brand-carousel-track{animation-play-state:paused}
 @keyframes brand-ribbon{to{transform:translateX(-50%)}}
-@media(max-width:700px){.brand-carousel-group a{min-height:56px;padding:12px 20px;font-size:14px}.brand-carousel-viewport{padding:12px 0}}
-@media(prefers-reduced-motion:reduce){.brand-carousel-track{animation:none}.brand-carousel-copy,.brand-carousel-tools{display:none}.brand-carousel-viewport{overflow-x:auto}}
 
 /* Catalogue refinements and a quiet, non-interactive brand ribbon. */
-.brand-ribbon-item{display:flex;align-items:center;gap:16px;flex-shrink:0;padding:12px 24px;color:#dbe8f6;font-size:16px;font-weight:600;white-space:nowrap;border:0;background:none;cursor:default}
-.brand-ribbon-item img{width:66px;height:38px;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
+.brand-ribbon-item{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:148px;padding:12px 24px;border:0;background:none;cursor:default;user-select:none}
+.brand-ribbon-item img{width:100px;height:48px;object-fit:contain;filter:brightness(0) invert(1);opacity:.85}
 .catalog-filters{display:flex;align-items:end;flex-wrap:wrap;gap:16px;margin:0 0 24px;padding:18px;background:#131d2d;border:1px solid #ffffff12;border-radius:12px}
 .catalog-filters fieldset{border:0;padding:0;margin:0;min-width:0}.catalog-filters legend,.catalog-filters>label{font-size:12px;color:#a9b9ce}.catalog-filters legend{margin-bottom:6px}.catalog-filters>label{display:flex;flex-direction:column;gap:6px}.catalog-filters select{min-height:44px;min-width:130px}.price-inputs{display:flex;align-items:center;gap:6px}.price-inputs input{width:110px;min-height:44px}.catalog-filters .sale-filter{flex-direction:row;align-items:center;min-height:44px;gap:8px}.sale-filter input{width:18px;height:18px;accent-color:#62b5ff}.catalog-filters button{min-height:44px;border:1px solid #ffffff25;background:#1c3048;border-radius:8px;padding:8px 12px}.filter-error{width:100%;color:#ffb4b4;margin:0}.price-values{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}.old-price{font-size:12px;color:#94a3b8}.discount-label{font-size:11px;color:#8bc5ff}.old-price[hidden],.discount-label[hidden]{display:none}.price-values .request-price{display:block;width:100%}
-@media(max-width:700px){.brand-ribbon-item{font-size:14px;padding:10px 16px;gap:12px}.brand-ribbon-item img{width:54px;height:32px}.catalog-filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding:14px}.catalog-filters fieldset{grid-column:1/-1}.price-inputs input{width:calc(50% - 12px);font-size:16px}.catalog-filters select{width:100%;min-width:0;font-size:16px}.catalog-filters .sale-filter{font-size:13px}.filter-error{grid-column:1/-1}.catalog-filters button{font-size:12px}}
+@media(max-width:700px){.brand-ribbon-item{width:120px;padding:10px 16px}.brand-ribbon-item img{width:88px;height:42px}.brand-carousel-viewport{padding:12px 0}.catalog-filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding:14px}.catalog-filters fieldset{grid-column:1/-1}.price-inputs input{width:calc(50% - 12px);font-size:16px}.catalog-filters select{width:100%;min-width:0;font-size:16px}.catalog-filters .sale-filter{font-size:13px}.filter-error{grid-column:1/-1}.catalog-filters button{font-size:12px}}
